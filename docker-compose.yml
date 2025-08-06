@@ -31,6 +31,7 @@ services:
       - PGDATABASE=postgres
       - PGPASSWORD=postgres_password
       - PGPORT=5432
+
   client:
     environment:
       - WDS_SOCKET_PORT=0

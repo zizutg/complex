@@ -59,6 +59,11 @@ app.get('/values/current', async (req, res) => {
 app.post('/values', async (req, res) => {
   const index = req.body.index;
 
+  // Validate input
+  if (!index || isNaN(index)) {
+    return res.status(400).send('Index must be a number');
+  }
+
   if (parseInt(index) > 40) {
     return res.status(422).send('Index too high');
   }
