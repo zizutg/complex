@@ -10,15 +10,15 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - run: docker build -t yalewzj/react-test -f ./client/Dockerfile.dev ./client
-      - run: docker run -e CI=true yalewzj/react-test npm test
+      - run: docker build -t zizutg/react-test -f ./client/Dockerfile.dev ./client
+      - run: docker run -e CI=true zizutg/react-test npm test
 
-      - run: docker build -t yalewzj/multi-client ./client
-      - run: docker build -t yalewzj/multi-nginx ./nginx
-      - run: docker build -t yalewzj/multi-server ./server
-      - run: docker build -t yalewzj/multi-worker ./worker
+      - run: docker build -t zizutg/multi-client ./client
+      - run: docker build -t zizutg/multi-nginx ./nginx
+      - run: docker build -t zizutg/multi-server ./server
+      - run: docker build -t zizutg/multi-worker ./worker
 
-      - run: docker push yalewzj/multi-client
-      - run: docker push yalewzj/multi-nginx
-      - run: docker push yalewzj/multi-server
-      - run: docker push yalewzj/multi-worker
+      - run: docker push zizutg/multi-client
+      - run: docker push zizutg/multi-nginx
+      - run: docker push zizutg/multi-server
+      - run: docker push zizutg/multi-worker
