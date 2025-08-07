@@ -6,6 +6,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+
 # Second stage: serve with nginx
 FROM nginx:stable-alpine
 EXPOSE 3000
