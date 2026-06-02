@@ -23,6 +23,10 @@ const pgClient = new Pool({
       : { rejectUnauthorized: false },
 });
 
+pgClient.on('error', (err) => {
+  console.error('Postgres client error', err);
+});
+
 pgClient.on('connect', (client) => {
   client
     .query('CREATE TABLE IF NOT EXISTS values (number INT)')
@@ -38,20 +42,41 @@ const redisClient = redis.createClient({
 });
 const redisPublisher = redisClient.duplicate();
 
+redisClient.on('error', (err) => {
+  console.error('Redis client error', err);
+});
+
+redisPublisher.on('error', (err) => {
+  console.error('Redis publisher error', err);
+});
+
 // Express route handlers
 
 app.get('/', (req, res) => {
   res.send('Hi');
 });
 
-app.get('/values/all', async (req, res) => {
-  const values = await pgClient.query('SELECT * from values');
+app.get('/health', (req, res) => {
+  res.send({ status: 'ok' });
+});
 
-  res.send(values.rows);
+app.get('/values/all', async (req, res) => {
+  try {
+    const values = await pgClient.query('SELECT * from values');
+    res.send(values.rows);
+  } catch (err) {
+    console.error('Failed to fetch values from Postgres', err);
+    res.status(500).send('Unable to fetch indexes');
+  }
 });
 
 app.get('/values/current', async (req, res) => {
   redisClient.hgetall('values', (err, values) => {
+    if (err) {
+      console.error('Failed to fetch values from Redis', err);
+      return res.status(500).send('Unable to fetch calculated values');
+    }
+
     res.send(values);
   });
 });
@@ -70,7 +95,9 @@ app.post('/values', async (req, res) => {
 
   redisClient.hset('values', index, 'Nothing yet!');
   redisPublisher.publish('insert', index);
-  pgClient.query('INSERT INTO values(number) VALUES($1)', [index]);
+  pgClient
+    .query('INSERT INTO values(number) VALUES($1)', [index])
+    .catch((err) => console.error('Failed to insert value into Postgres', err));
 
   res.send({ working: true });
 });
