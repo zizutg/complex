@@ -1,4 +1,14 @@
 services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+
+  redis:
+    image: redis:latest
+    restart: always
+
   client:
     image: zizutg/multi-client
     restart: always
@@ -6,14 +16,26 @@ services:
   api:
     image: zizutg/multi-server
     restart: always
-    env_file:
-      - .env
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
 
   worker:
     image: zizutg/multi-worker
     restart: always
-    env_file:
-      - .env
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 
   nginx:
     image: zizutg/multi-nginx

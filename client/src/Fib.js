@@ -43,10 +43,13 @@ class Fib extends Component {
       await this.fetchIndexes();
       await this.fetchValues();
     } catch (err) {
-      const error =
+      let error =
         err.response && err.response.data
           ? err.response.data
           : 'Unable to submit index';
+      if (typeof error === 'string' && error.trim().startsWith('<')) {
+        error = 'Unable to reach API server';
+      }
       this.setState({ error });
     }
   };
