@@ -1,0 +1,25 @@
+services:
+  client:
+    image: zizutg/multi-client
+    restart: always
+
+  api:
+    image: zizutg/multi-server
+    restart: always
+    env_file:
+      - .env
+
+  worker:
+    image: zizutg/multi-worker
+    restart: always
+    env_file:
+      - .env
+
+  nginx:
+    image: zizutg/multi-nginx
+    restart: always
+    depends_on:
+      - client
+      - api
+    ports:
+      - "80:80"
