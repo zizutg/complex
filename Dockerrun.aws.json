@@ -1,0 +1,36 @@
+{
+    "AWSEBDockerrunVestion": 2,
+    "containerDefinitions":[
+        {
+            "name":"client",
+            "image":"zizutg/multi-client",
+            "hostname":"client",
+            "essential":false
+        },
+        {
+            "name":"server",
+            "image":"zizutg/multi-server",
+            "hostname":"api",
+            "essential":true
+        },
+        {
+            "name":"worker",
+            "image":"zizutg/multi-worker",
+            "hostname":"worker",
+            "essential":false
+        },
+        {
+            "name":"nginx",
+            "image":"zizutg/multi-nginx",
+            "hostname":"nginx",
+            "essential":false,
+            "portMappings":[
+                {
+                    "hostPort": 80,
+                    "containerPort": 80
+                }
+            ],
+            "links":["client", "server"]
+        }
+    ]
+}
