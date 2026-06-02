@@ -6,11 +6,17 @@ class Fib extends Component {
     seenIndexes: [],
     values: {},
     index: '',
+    error: '',
   };
 
   componentDidMount() {
     this.fetchValues();
     this.fetchIndexes();
+    this.refreshInterval = setInterval(() => this.fetchValues(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.refreshInterval);
   }
 
   async fetchValues() {
@@ -28,10 +34,21 @@ class Fib extends Component {
   handleSubmit = async (event) => {
     event.preventDefault();
 
-    await axios.post('/api/values', {
-      index: this.state.index,
-    });
-    this.setState({ index: '' });
+    try {
+      await axios.post('/api/values', {
+        index: this.state.index,
+      });
+
+      this.setState({ index: '', error: '' });
+      await this.fetchIndexes();
+      await this.fetchValues();
+    } catch (err) {
+      const error =
+        err.response && err.response.data
+          ? err.response.data
+          : 'Unable to submit index';
+      this.setState({ error });
+    }
   };
 
   renderSeenIndexes() {
@@ -63,6 +80,7 @@ class Fib extends Component {
           />
           <button>Submit</button>
         </form>
+        {this.state.error && <div>{this.state.error}</div>}
 
         <h3>Indexes I have seen:</h3>
         {this.renderSeenIndexes()}
