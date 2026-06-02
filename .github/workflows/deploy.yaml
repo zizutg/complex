@@ -40,4 +40,4 @@ jobs:
           deployment_package: deploy.zip
           existing_bucket_name: elasticbeanstalk-us-east-2-977461861966
           wait_for_deployment: true
-          recovery_wait_time: 300
+          wait_for_environment_recovery: 300
