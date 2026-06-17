@@ -29,4 +29,4 @@ services:
       - client
       - api
     ports:
-      - "80:80"
+      - "3050:80"
